@@ -129,8 +129,18 @@ app.get('/endexp', async (req, res) => {
   try {
     const { googleId } = req.query;
 
-    const user = await database.findOne({ googleId });
-    return res.status(200).json({ time: user[0].time, constant: user[0].constant
+    const users = await database.find({ googleId }); 
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const timeArray = users.map(user => user.time);
+    const constantArray = users.map(user => user.constant);
+
+    return res.status(200).json({
+      time: timeArray,
+      constant: constantArray
     });
   } catch (error) {
     console.error('Error', error);
