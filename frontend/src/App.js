@@ -1,197 +1,231 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ChakraProvider,
   theme,
   Flex,
-  Text,
+  Button,
+  Divider,
   FormControl,
   FormLabel,
-  Button,
   Input,
   Image,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
+  Text,
 } from '@chakra-ui/react';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  LineElement,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Filler,
+} from 'chart.js';
 
-// import Footer from './Components/Footer';
+ChartJS.register(
+  Title,
+  Tooltip,
+  LineElement,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Filler
+);
 
-const InputModal = props => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const submit = () => {
-    props.addForm();
-    onClose();
-  };
+const Cell = props => {
+  const [form, setForm] = useState({
+    constant: null,
+    time: null,
+    img: null,
+  });
+  const [finalForm, setFinalForm] = useState({});
+  useEffect(() => {
+    if (props.completed) {
+      setForm(props.form);
+      setFinalForm(props.form);
+    }
+  }, [props.completed, props.form]);
   return (
     <>
-      <Button
-        onClick={onOpen}
-        isDisabled={props.isDisabled}
-        m={'1%'}
-        colorScheme='blue'
-      >
-        <Text fontSize={'2xl'}>+</Text>
-      </Button>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Input</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl p={'2%'}>
-              <FormLabel>Time</FormLabel>
-              <Input
-                id='time'
-                placeholder='Select Date and Time'
-                size='md'
-                type='time'
-                onChange={e => {
-                  const temp = new Date();
-                  temp.setHours(...e.target.value.split(':'));
-                  props.setFormData(formData => ({
-                    ...formData,
-                    dateTime: temp,
-                  }));
-                }}
-                // value={props.formData.dateTime}
-              />
-            </FormControl>
-            <FormControl p={'2%'}>
-              <FormLabel>Constant</FormLabel>
-              <Input
-                id='constant'
-                placeholder='Constant'
-                size='md'
-                type='number'
-                onChange={e => {
-                  props.setFormData(formData => ({
-                    ...formData,
-                    constant: e.target.value,
-                  }));
-                }}
-                // value={props.formData.constant}
-              />
-            </FormControl>
-            <FormControl p={'2%'}>
-              <FormLabel>Image</FormLabel>
-              <Input
-                id='image'
-                placeholder='Upload image'
-                size='md'
-                type='file'
-                accept='image/*'
-                onChange={e => {
-                  props.setFormData(formData => ({
-                    ...formData,
-                    img: URL.createObjectURL(e.target.files[0]),
-                  }));
-                }}
-                // value={img}
-              />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
+      <Flex>
+        <Flex width='100%' direction={'column'} height={'-webkit-fit-content'}>
+          <FormControl p={'2%'}>
+            <FormLabel>Time</FormLabel>
+            <Input
+              id='time'
+              placeholder='Select Date and Time'
+              size='md'
+              type='time'
+              onChange={e => {
+                const temp = new Date();
+                temp.setHours(...e.target.value.split(':'));
+                setForm(form => ({ ...form, time: temp }));
+              }}
+              // value={form.time}
+            />
+          </FormControl>
+          <FormControl p={'2%'}>
+            <FormLabel>Constant</FormLabel>
+            <Input
+              id='constant'
+              placeholder='Constant'
+              size='md'
+              type='number'
+              onChange={e => {
+                setForm(form => ({ ...form, constant: e.target.value }));
+              }}
+              // value={props.formData.constant}
+            />
+          </FormControl>
+          <FormControl p={'2%'}>
+            <FormLabel>Image</FormLabel>
+            <Input
+              id='image'
+              placeholder='Upload image'
+              size='md'
+              type='file'
+              accept='image/*'
+              onChange={e => {
+                setForm(form => ({
+                  ...form,
+                  img: URL.createObjectURL(e.target.files[0]),
+                }));
+              }}
+              // value={img}
+            />
+          </FormControl>
+          <Flex justifyContent={'end'} p='2%'>
             <Button
               colorScheme='blue'
-              mr={3}
-              onClick={submit}
-              isDisabled={
-                !props.formData.dateTime ||
-                !props.formData.constant ||
-                !props.formData.img
-              }
+              onClick={() => {
+                setFinalForm(form);
+                props.setNewData(form);
+              }}
             >
-              Add
+              Submit
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </Flex>
+        </Flex>
+        <Divider
+          orientation='vertical'
+          borderWidth={'1.5px'}
+          borderColor={'black'}
+          height={'auto'}
+        />
+        <Flex width='100%' direction={'column'}>
+          {!finalForm.constant ? (
+            <></>
+          ) : (
+            <Flex
+              p='5%'
+              direction={'column'}
+              alignItems={'center'}
+              justifyContent={'space-around'}
+              height={'100%'}
+            >
+              <Flex alignItems={'start'} width={'100%'}>
+                <Image src={finalForm.img} p='1%' boxSize={100} />
+                <Flex direction={'column'} width={'100%'}>
+                  <Text p='3%'>{`Time: ${finalForm.time.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}`}</Text>
+                  <Text p='3%'>{`Constant: ${finalForm.constant}`}</Text>
+                </Flex>
+              </Flex>
+              <Text fontSize={'6xl'}>56.75</Text>
+            </Flex>
+          )}
+        </Flex>
+      </Flex>
+      <Divider
+        orientation='horizontal'
+        borderWidth={'1.5px'}
+        borderColor={'black'}
+      />
     </>
   );
 };
 
-function App() {
-  const [formData, setFormData] = useState({
-    img: null,
-    dateTime: null,
-    constant: null,
+const App = () => {
+  const [gdata, setGdata] = useState({
+    labels: [
+      'Jan',
+      'Feb',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    datasets: [
+      {
+        label: 'First Dataset',
+        data: [10, 20, 30, 42, 51, 82, 31, 59, 61, 73, 91, 58],
+        backgroundColor: 'yellow',
+        borderColor: 'green',
+        tension: 0.4,
+        fill: true,
+        pointStyle: 'rect',
+        pointBorderColor: 'blue',
+        pointBackgroundColor: '#fff',
+        showLine: true,
+      },
+    ],
   });
+  const [showGraph, setShowGraph] = useState(false);
   const [data, setData] = useState([]);
-  const addForm = () => {
-    setData(data => [...data, formData]);
-    setFormData({
-      img: null,
-      dateTime: null,
-      constant: null,
-    });
-  };
+  const [newData, setNewData] = useState({
+    constant: null,
+    time: null,
+    img: null,
+  });
   return (
     <ChakraProvider theme={theme}>
-      <Flex
-        direction={'column'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        height={'100vh'}
-      >
-        <Flex
-          width={'100%'}
-          alignItems={data[0] ? 'start' : 'center'}
-          justifyContent={data[0] ? 'start' : 'center'}
-          height={'100%'}
-          flexWrap={'wrap'}
-        >
-          {data[0] ? (
-            data.map((item, i) => (
-              <Flex direction={'column'} p={'1%'} key={i}>
-                <Image
-                  src={item['img']}
-                  alt={'a'}
-                  boxSize={200}
-                  objectFit={'cover'}
-                />
-                <Text>{`Time: ${item.dateTime.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}`}</Text>
-                <Text>{`Constant: ${item.constant}`}</Text>
-              </Flex>
-            ))
-          ) : (
-            <Text fontSize={'6xl'}>Add stuff</Text>
-          )}
+      <Flex direction={'column'}>
+        {data.map((item, i) => (
+          <Cell key={i} setNewData={setNewData} form={item} completed={true} />
+        ))}
+        <Cell key={data.length} setNewData={setNewData} />
+        <Flex justifyContent={'end'}>
+          <Button
+            colorScheme='blue'
+            m='1%'
+            onClick={() => {
+              console.log(newData);
+              setData(data => [...data, newData]);
+            }}
+          >
+            +
+          </Button>
+          <Button
+            colorScheme='blue'
+            m='1%'
+            onClick={() => {
+              setShowGraph(!showGraph);
+            }}
+          >
+            End Exp
+          </Button>
         </Flex>
-        <Flex
-          width={'100%'}
-          alignItems={'center'}
-          justifyContent={'center'}
-          height={'-webkit-fit-content'}
-          p='2%'
-        >
-          <InputModal
-            setFormData={setFormData}
-            formData={formData}
-            addForm={addForm}
-            isDisabled={data.length === 10}
-          />
-          {data.length === 0 ? (
-            <></>
-          ) : (
-            <Button m={'1%'} colorScheme='blue'>
-              End Experiment
-            </Button>
-          )}
-        </Flex>
+        {showGraph ? (
+          <Flex width={'70%'}>
+            <Line data={gdata}>Hello</Line>
+          </Flex>
+        ) : (
+          <></>
+        )}
       </Flex>
-      {/* <Footer /> */}
     </ChakraProvider>
   );
-}
+};
 
 export default App;
