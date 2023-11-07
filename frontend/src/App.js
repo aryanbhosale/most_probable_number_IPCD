@@ -190,7 +190,7 @@ const App = () => {
   });
   return (
     <ChakraProvider theme={theme}>
-      <Flex direction={'column'}>
+      <Flex direction={'column'} overflowX={"hidden"}>
         {data.map((item, i) => (
           <Cell key={i} setNewData={setNewData} form={item} completed={true} />
         ))}
@@ -221,7 +221,7 @@ const App = () => {
             <Line data={gdata}>Hello</Line>
           </Flex>
         ) : (
-          <></>
+          null
         )}
       </Flex>
     </ChakraProvider>
