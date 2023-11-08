@@ -125,6 +125,22 @@ app.post('/imageupload', upload.single('image'), async (req, res) => {
   }
 });
 
+app.get('/user/:googleId', async (req, res) => {
+  try {
+    const { googleId } = req.params;
+    const user = await database.findOne({ googleId });
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(400).json('user not found');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json('internal server error');
+  }
+});
+
 app.get('/endexp', async (req, res) => {
   try {
     const { googleId } = req.query;
