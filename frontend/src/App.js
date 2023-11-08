@@ -41,13 +41,13 @@ const Cell = props => {
     time: null,
     img: null,
   });
-  const [finalForm, setFinalForm] = useState({});
+  const [isComp, setIsComp] = useState(props.completed);
   useEffect(() => {
     if (props.completed) {
       setForm(props.form);
-      setFinalForm(props.form);
     }
   }, [props.completed, props.form]);
+
   return (
     <>
       <Flex>
@@ -55,21 +55,21 @@ const Cell = props => {
           <FormControl p={'2%'}>
             <FormLabel>Time</FormLabel>
             <Input
+              disabled={isComp}
               id='time'
               placeholder='Select Date and Time'
               size='md'
-              type='time'
+              type='datetime-local'
               onChange={e => {
-                const temp = new Date();
-                temp.setHours(...e.target.value.split(':'));
+                const temp = new Date(e.target.value);
                 setForm(form => ({ ...form, time: temp }));
               }}
-              // value={form.time}
             />
           </FormControl>
           <FormControl p={'2%'}>
             <FormLabel>Constant</FormLabel>
             <Input
+              disabled={isComp}
               id='constant'
               placeholder='Constant'
               size='md'
@@ -77,12 +77,12 @@ const Cell = props => {
               onChange={e => {
                 setForm(form => ({ ...form, constant: e.target.value }));
               }}
-              // value={props.formData.constant}
             />
           </FormControl>
           <FormControl p={'2%'}>
             <FormLabel>Image</FormLabel>
             <Input
+              disabled={isComp}
               id='image'
               placeholder='Upload image'
               size='md'
@@ -94,15 +94,15 @@ const Cell = props => {
                   img: URL.createObjectURL(e.target.files[0]),
                 }));
               }}
-              // value={img}
             />
           </FormControl>
           <Flex justifyContent={'end'} p='2%'>
             <Button
+              disabled={isComp || !form.constant || !form.img || !form.time}
               colorScheme='blue'
               onClick={() => {
-                setFinalForm(form);
-                props.setNewData(form);
+                props.setData(data => [...data, form]);
+                setIsComp(true);
               }}
             >
               Submit
@@ -116,7 +116,7 @@ const Cell = props => {
           height={'auto'}
         />
         <Flex width='100%' direction={'column'}>
-          {!finalForm.constant ? (
+          {!isComp || !form.constant || !form.img || !form.time ? (
             <></>
           ) : (
             <Flex
@@ -127,13 +127,13 @@ const Cell = props => {
               height={'100%'}
             >
               <Flex alignItems={'start'} width={'100%'}>
-                <Image src={finalForm.img} p='1%' boxSize={100} />
+                <Image src={form.img} p='1%' boxSize={100} />
                 <Flex direction={'column'} width={'100%'}>
-                  <Text p='3%'>{`Time: ${finalForm.time.toLocaleTimeString([], {
+                  <Text p='3%'>{`Time: ${form.time.toDateString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}`}</Text>
-                  <Text p='3%'>{`Constant: ${finalForm.constant}`}</Text>
+                  <Text p='3%'>{`Constant: ${form.constant}`}</Text>
                 </Flex>
               </Flex>
               <Text fontSize={'6xl'}>56.75</Text>
@@ -183,33 +183,33 @@ const App = () => {
   });
   const [showGraph, setShowGraph] = useState(false);
   const [data, setData] = useState([]);
-  const [newData, setNewData] = useState({
-    constant: null,
-    time: null,
-    img: null,
-  });
+  const [copyData, setCopyData] = useState([]);
   return (
     <ChakraProvider theme={theme}>
-      <Flex direction={'column'} overflowX={"hidden"}>
-        {data.map((item, i) => (
-          <Cell key={i} setNewData={setNewData} form={item} completed={true} />
+      <Flex direction={'column'} overflowX={'hidden'}>
+        {copyData.map((item, i) => (
+          <Cell key={i} setData={setData} form={item} completed={true} />
         ))}
-        <Cell key={data.length} setNewData={setNewData} />
+        <Cell key={copyData.length} setData={setData} completed={false} />
         <Flex justifyContent={'end'}>
+          {copyData.length <= 8 ? (
+            <Button
+              colorScheme='blue'
+              m='1%'
+              onClick={() => {
+                setCopyData(data);
+              }}
+            >
+              +
+            </Button>
+          ) : (
+            <></>
+          )}
           <Button
             colorScheme='blue'
             m='1%'
             onClick={() => {
-              console.log(newData);
-              setData(data => [...data, newData]);
-            }}
-          >
-            +
-          </Button>
-          <Button
-            colorScheme='blue'
-            m='1%'
-            onClick={() => {
+              console.log(data);
               setShowGraph(!showGraph);
             }}
           >
@@ -221,7 +221,7 @@ const App = () => {
             <Line data={gdata}>Hello</Line>
           </Flex>
         ) : (
-          null
+          <></>
         )}
       </Flex>
     </ChakraProvider>
