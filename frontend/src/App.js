@@ -37,12 +37,11 @@ ChartJS.register(
 
 const Cell = props => {
   const [form, setForm] = useState({
-    //data of the individual cell {constant: , img: , time: }, img is a URL and time is a Date object
     constant: null,
     time: null,
     img: null,
   });
-  const [isComp, setIsComp] = useState(props.completed); //stores if the form has been submitted or not
+  const [isComp, setIsComp] = useState(props.completed);
   useEffect(() => {
     if (props.completed) {
       setForm(props.form);
@@ -181,15 +180,15 @@ const App = () => {
         showLine: true,
       },
     ],
-  }); //data for the graph, will be populated later
+  });
   const [showGraph, setShowGraph] = useState(false);
-  const [data, setData] = useState([]); //array of objects of the form {constant: , img: , time: } img is a URL and time is a Date object
-  const [copyData, setCopyData] = useState([]); //this is a copy of the data, just a necessity for frontend
+  const [data, setData] = useState([]);
+  const [copyData, setCopyData] = useState([]);
   return (
     <ChakraProvider theme={theme}>
-      <Flex direction={'column'}>
+      <Flex direction={'column'} overflowX={'hidden'}>
         {copyData.map((item, i) => (
-          <Cell key={i} setData={setData} form={item} completed={true} /> //rerendering the completed cells
+          <Cell key={i} setData={setData} form={item} completed={true} />
         ))}
         <Cell key={copyData.length} setData={setData} completed={false} />
         <Flex justifyContent={'end'}>
