@@ -42,6 +42,24 @@ const Cell = props => {
     img: null,
   });
   const [isComp, setIsComp] = useState(props.completed);
+
+  const handleSubmit = () => {
+    props.setData(data => [...data, form]);
+    setIsComp(true);
+    fetch('http://localhost:3001/upload', {
+      method: 'POST',
+      body: JSON.stringify({
+        constant: form.constant,
+        url: form.img,
+        time: form.time,
+        googleId: '100536027600124324595',
+      }),
+    })
+      .then(res => res.json())
+      .then(data => console.log(data))
+      .catch(err => console.log(err.message));
+  };
+
   useEffect(() => {
     if (props.completed) {
       setForm(props.form);
@@ -100,10 +118,7 @@ const Cell = props => {
             <Button
               disabled={isComp || !form.constant || !form.img || !form.time}
               colorScheme='blue'
-              onClick={() => {
-                props.setData(data => [...data, form]);
-                setIsComp(true);
-              }}
+              onClick={handleSubmit}
             >
               Submit
             </Button>
