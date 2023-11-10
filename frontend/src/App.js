@@ -42,12 +42,16 @@ const Cell = props => {
     img: null,
   });
   const [isComp, setIsComp] = useState(props.completed);
-
+  
   const handleSubmit = () => {
     props.setData(data => [...data, form]);
     setIsComp(true);
+    
     fetch('http://localhost:3001/upload', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Specify the content type
+      },
       body: JSON.stringify({
         constant: form.constant,
         url: form.img,
@@ -59,6 +63,7 @@ const Cell = props => {
       .then(data => console.log(data))
       .catch(err => console.log(err.message));
   };
+  
 
   useEffect(() => {
     if (props.completed) {

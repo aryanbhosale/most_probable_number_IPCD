@@ -50,8 +50,6 @@ app.use(
               email: profile.email,
               googleId: profile.id,
               data: [],
-              username: '',
-              description: '',
             };
             const result = await database.insertOne(newUser);
             if (result.acknowledged) {
@@ -88,12 +86,13 @@ app.get(
 
 app.post('/upload', async (req, res) => {
   try {
-    const {constant, url, googleId, time } = req.body;
+    const { constant, url, googleId, time } = req.body;
+    console.log(constant, googleId, time);
+    const user = await database.findOne({ googleId });
 
-    if (!content) {
-      return res.status(400).json({ message: 'Content is required.' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-    const user = await database.findOne({googleId});
 
     const newData = {
       constant: constant,
@@ -106,6 +105,7 @@ app.post('/upload', async (req, res) => {
       { $push: { data: newData } },
       { new: true }
     );
+
     console.log(updatedUser);
     return res.status(201).json({ message: 'Post added successfully', user: user });
   } catch (error) {
@@ -113,6 +113,7 @@ app.post('/upload', async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 app.post('/imageupload', upload.single('image'), async (req, res) => {
   try {
