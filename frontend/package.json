@@ -46,9 +46,12 @@
     ]
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.16",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
-    "prettier": "2.7.1"
+    "postcss": "^8.4.31",
+    "prettier": "2.7.1",
+    "tailwindcss": "^3.3.5"
   },
   "lint-staged": {
     "**/*.{html,css,js,jsx,json}": "prettier --write"
