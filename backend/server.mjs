@@ -86,8 +86,7 @@ app.get(
 
 app.post('/upload', async (req, res) => {
   try {
-    const { constant, url, googleId, time } = req.body;
-    console.log(constant, googleId, time);
+    const { constant, url, googleId, time, mpn } = req.body;
     const user = await database.findOne({ googleId });
 
     if (!user) {
@@ -97,7 +96,8 @@ app.post('/upload', async (req, res) => {
     const newData = {
       constant: constant,
       imageurl: url,
-      timestamp: time
+      timestamp: time,
+      mpn: mpn
     };
 
     const updatedUser = await database.findOneAndUpdate(
@@ -146,18 +146,24 @@ app.get('/endexp', async (req, res) => {
   try {
     const { googleId } = req.query;
 
-    const users = await database.find({ googleId }); 
-
-    if (users.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
+    const user = await database.find({ googleId }); 
+    
+    if(!user) {
+      res.status(400).json('User not found');
     }
 
-    const timeArray = users.map(user => user.time);
-    const constantArray = users.map(user => user.constant);
+    const data = user.data;
+
+    if (data.length === 0) {
+      return res.status(404).json({ message: 'User or data not found' });
+    }
+    
+    const timeArray = data.map(data => data.timestamp);
+    const mpnArray = data.map(data => data.mpn);
 
     return res.status(200).json({
       time: timeArray,
-      constant: constantArray
+      mpn: mpnArray
     });
   } catch (error) {
     console.error('Error', error);
