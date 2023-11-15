@@ -11,7 +11,9 @@ import {
 } from '@chakra-ui/react';
 
 const Cell = props => {
+  const [isLoading, setIsLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
+  const [mpn, setMpn] = useState(null);
   const [form, setForm] = useState({
     constant: null,
     time: null,
@@ -20,6 +22,7 @@ const Cell = props => {
   const [isComp, setIsComp] = useState(props.completed);
 
   const handleSubmit = () => {
+    setIsLoading(true);
     const fD = new FormData();
     fD.append('image', form.img);
     fetch('http://localhost:3001/imageupload', {
@@ -28,8 +31,27 @@ const Cell = props => {
     })
       .then(res => res.json())
       .then(data => {
-        console.log(data);
         setForm(form => ({ ...form, img: data.imageUrl }));
+        fetch('http://127.0.0.1:5000/img', {
+          method: 'POST',
+          headers: { 'Content-type': 'application/json; charset=UTF-8' },
+          body: JSON.stringify({
+            title: 'foo',
+            body: 'bar',
+            userId: user.googleId,
+            img: data.imageUrl,
+          }),
+        })
+          .then(res => res.text())
+          .then(d => {
+            d = d
+              .replace('greater than or equal to ', '≥')
+              .replace('less than or equal to ', '≤');
+            setMpn(d);
+            props.setMpn(data => [...data, d]);
+            setIsLoading(false);
+          })
+          .catch(err => console.log(err));
         fetch('http://localhost:3001/upload', {
           method: 'POST',
           headers: {
@@ -44,7 +66,6 @@ const Cell = props => {
         })
           .then(res => res.json())
           .then(data2 => {
-            console.log(data2);
             props.setData(d => [...d, { ...form, img: data.imageUrl }]);
             setIsComp(true);
           })
@@ -56,6 +77,7 @@ const Cell = props => {
   useEffect(() => {
     if (props.completed) {
       setForm(props.form);
+      setMpn(props.mpn);
     }
   }, [props.completed, props.form]);
 
@@ -109,6 +131,7 @@ const Cell = props => {
           </FormControl>
           <Flex justifyContent={'end'} p='2%'>
             <Button
+              isLoading={isLoading}
               disabled={isComp || !form.constant || !form.img || !form.time}
               colorScheme='blue'
               onClick={handleSubmit}
@@ -144,7 +167,7 @@ const Cell = props => {
                   <Text p='3%'>{`Constant: ${form.constant}`}</Text>
                 </Flex>
               </Flex>
-              <Text fontSize={'6xl'}>56.75</Text>
+              <Text fontSize={'6xl'}>{mpn}</Text>
             </Flex>
           )}
         </Flex>

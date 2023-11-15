@@ -62,6 +62,7 @@ const Home = () => {
   const [showGraph, setShowGraph] = useState(false);
   const [data, setData] = useState([]);
   const [copyData, setCopyData] = useState([]);
+  const [mpnList, setMpn] = useState([]);
 
   useEffect(() => {
     fetch(`http://localhost:3001/user/${googleId}`)
@@ -72,17 +73,25 @@ const Home = () => {
       });
   }, [googleId]);
 
-  useEffect(() => {
-    console.log(data.map(obj => obj.img));
-  }, [data]);
-
   return (
     <ChakraProvider theme={theme}>
       <Flex direction={'column'} overflowX={'hidden'}>
         {copyData.map((item, i) => (
-          <Cell key={i} setData={setData} form={item} completed={true} />
+          <Cell
+            key={i}
+            setData={setData}
+            form={item}
+            completed={true}
+            setMpn={setMpn}
+            mpn={mpnList[i]}
+          />
         ))}
-        <Cell key={copyData.length} setData={setData} completed={false} />
+        <Cell
+          key={copyData.length}
+          setData={setData}
+          completed={false}
+          setMpn={setMpn}
+        />
         <Flex justifyContent={'end'}>
           {copyData.length <= 8 ? (
             <Button
