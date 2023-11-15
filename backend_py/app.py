@@ -35,7 +35,6 @@ def prompt():
         h_vals = []
         # Load the image
         #cropped_image = cv2.imread('/Users/harshvardhanmestha/Desktop/abc.png')
-
         url_response = urllib.request.urlopen(img_url)
         jpg_as_np = np.frombuffer(url_response.read(), dtype=np.uint8)
         print(len(jpg_as_np))
