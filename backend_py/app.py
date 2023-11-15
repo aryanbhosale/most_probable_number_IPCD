@@ -1,12 +1,12 @@
-
-
 from flask import Flask, jsonify, request, render_template,make_response,request,send_file
 from werkzeug.utils import secure_filename
-
+from flask_cors import CORS
 import datetime
 import cv2
 import os
 import numpy as np
+import json
+import urllib
 
 # creating a Flask app
 app = Flask(__name__,static_folder='stylesheets')
@@ -14,22 +14,35 @@ app = Flask(__name__,static_folder='stylesheets')
 
 upload_folder = os.path.join('static', 'uploads')
 app.config['UPLOAD'] = upload_folder
+cors = CORS(app, resources={r'/img': {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 
     
-@app.route('/', methods = ['GET','POST'])
+@app.route('/img', methods = ['GET','POST'])
 def prompt():
     if(request.method == 'GET'):
   
         data = "its up <GET>"
         #print("hxdhk")
-        return render_template('/index.html')
+        return "hi"
     
     if(request.method == 'POST'):
-        
+        data_json = json.loads(request.data)
+        print(data_json['title'])
+        img_url = data_json['img']
+        print(img_url)
+
         h_vals = []
         # Load the image
-        cropped_image = cv2.imread('/Users/harshvardhanmestha/Desktop/abc.png')
+        #cropped_image = cv2.imread('/Users/harshvardhanmestha/Desktop/abc.png')
 
+        url_response = urllib.request.urlopen(img_url)
+        jpg_as_np = np.frombuffer(url_response.read(), dtype=np.uint8)
+        print(len(jpg_as_np))
+        cropped_image = cv2.imdecode(jpg_as_np,cv2.IMREAD_COLOR)
+        print(cropped_image.shape)
+        # cv2.imshow("yes",img)
+        # cv2.waitKey()
         num_rows, num_cols = 4, 6
 
         cell_height = cropped_image.shape[0] // num_rows
@@ -173,7 +186,15 @@ def prompt():
         elif(r1==5 and r2==5 and r3==5):mpn = "greater than or equal to " + str(1600)
 
 
-        return render_template('processed_img.html',mpn=mpn)
+        data = { 
+            "Modules" : 15, 
+            "Subject" : str(mpn) 
+        }
+
+        r = make_response(data)
+        r.content_type = 'application/json'
+        # return str(mpn)
+        return str(mpn)
 
     
 
