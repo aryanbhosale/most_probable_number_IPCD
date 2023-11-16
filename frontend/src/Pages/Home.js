@@ -29,40 +29,11 @@ ChartJS.register(
 const Home = () => {
   const { googleId } = useParams();
   const [user, setUser] = useState(null);
-  const [gdata, setGdata] = useState({
-    labels: [
-      'Jan',
-      'Feb',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'Oct',
-      'Nov',
-      'Dec',
-    ],
-    datasets: [
-      {
-        label: 'First Dataset',
-        data: [10, 20, 30, 42, 51, 82, 31, 59, 61, 73, 91, 58],
-        backgroundColor: 'yellow',
-        borderColor: 'green',
-        tension: 0.4,
-        fill: true,
-        pointStyle: 'rect',
-        pointBorderColor: 'blue',
-        pointBackgroundColor: '#fff',
-        showLine: true,
-      },
-    ],
-  });
   const [showGraph, setShowGraph] = useState(false);
   const [data, setData] = useState([]);
   const [copyData, setCopyData] = useState([]);
   const [mpnList, setMpn] = useState([]);
+  const [gdata, setGdata] = useState({});
 
   useEffect(() => {
     fetch(`http://localhost:3001/user/${googleId}`)
@@ -72,6 +43,40 @@ const Home = () => {
         setUser(data);
       });
   }, [googleId]);
+
+  useEffect(() => {
+    const x = {
+      datasets: [
+        {
+          label: 'MPN vs Time',
+          data: mpnList.map((item, i) => ({
+            x: data[i]['time'].toISOString().slice(0, -5).split('T').join(' '),
+            y:
+              item[0] === '≥' || item[0] === '≤'
+                ? parseInt(item.slice(1))
+                : parseInt(item),
+          })),
+          backgroundColor: 'yellow',
+          borderColor: 'green',
+          tension: 0.4,
+          fill: true,
+          pointStyle: 'rect',
+          pointBorderColor: 'blue',
+          pointBackgroundColor: '#fff',
+          showLine: true,
+        },
+      ],
+      options: {
+        scales: {
+          x: {
+            type: 'time',
+          },
+        },
+      },
+    };
+    console.log(x);
+    setGdata(x);
+  }, [showGraph]);
 
   return (
     <ChakraProvider theme={theme}>

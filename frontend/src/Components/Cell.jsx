@@ -46,30 +46,31 @@ const Cell = props => {
           .then(d => {
             d = d
               .replace('greater than or equal to ', '≥')
-              .replace('less than or equal to ', '≤');
+              .replace('less than ', '≤');
             setMpn(d);
             props.setMpn(data => [...data, d]);
+            fetch('http://localhost:3001/upload', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                constant: form.constant,
+                url: data.imageUrl,
+                time: form.time,
+                googleId: user.googleId,
+                mpn: d,
+              }),
+            })
+              .then(res => res.json())
+              .then(data2 => {
+                props.setData(d => [...d, { ...form, img: data.imageUrl }]);
+                setIsComp(true);
+              })
+              .catch(err => console.log(err.message));
             setIsLoading(false);
           })
           .catch(err => console.log(err));
-        fetch('http://localhost:3001/upload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            constant: form.constant,
-            url: data.imageUrl,
-            time: form.time,
-            googleId: user.googleId,
-          }),
-        })
-          .then(res => res.json())
-          .then(data2 => {
-            props.setData(d => [...d, { ...form, img: data.imageUrl }]);
-            setIsComp(true);
-          })
-          .catch(err => console.log(err.message));
       })
       .catch(err => console.log(err));
   };
@@ -79,7 +80,7 @@ const Cell = props => {
       setForm(props.form);
       setMpn(props.mpn);
     }
-  }, [props.completed, props.form]);
+  }, [props]);
 
   return (
     <>
