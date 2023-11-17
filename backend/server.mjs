@@ -43,11 +43,11 @@ app.use(
       async (accessToken, refreshToken, profile, done) => {
         try {
           let user = await database.findOne({ googleId: profile.id });
-  
+          console.log(profile);
           if (!user) {
             const newUser = {
               name: profile.displayName,
-              email: profile.email,
+              email: profile.emails[0].value,
               googleId: profile.id,
               data: [],
             };
@@ -73,7 +73,7 @@ app.use(
     done(null, user);
   });
   
-  app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+  app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   
 app.get(
   '/auth/google/callback',
