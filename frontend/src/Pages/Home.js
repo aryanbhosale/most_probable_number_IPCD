@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider, theme, Flex, Button } from '@chakra-ui/react';
+import { ChakraProvider, theme, Flex, Button, Text } from '@chakra-ui/react';
 import Cell from '../Components/Cell';
 import { Line } from 'react-chartjs-2';
 import {
@@ -13,7 +13,7 @@ import {
   PointElement,
   Filler,
 } from 'chart.js';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 ChartJS.register(
   Title,
@@ -25,10 +25,10 @@ ChartJS.register(
   PointElement,
   Filler
 );
-
 const Home = () => {
+  const navigate = useNavigate();
   const { googleId } = useParams();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [showGraph, setShowGraph] = useState(false);
   const [data, setData] = useState([]);
   const [copyData, setCopyData] = useState([]);
@@ -81,6 +81,23 @@ const Home = () => {
   return (
     <ChakraProvider theme={theme}>
       <Flex direction={'column'} overflowX={'hidden'}>
+        <Flex
+          justifyContent={'space-between'}
+          alignItems={'center'}
+          p={'1%'}
+          borderBottom={'solid lightgray'}
+        >
+          <Text fontSize={'2xl'}>{`Welcome, ${user.name}`}</Text>
+          <Button
+            colorScheme='blue'
+            onClick={() => {
+              localStorage.clear();
+              navigate('/login');
+            }}
+          >
+            Logout
+          </Button>
+        </Flex>
         {copyData.map((item, i) => (
           <Cell
             key={i}
@@ -98,7 +115,7 @@ const Home = () => {
           setMpn={setMpn}
         />
         <Flex justifyContent={'end'}>
-          {copyData.length <= 8 ? (
+          {copyData.length <= 8 && !showGraph ? (
             <Button
               colorScheme='blue'
               m='1%'
