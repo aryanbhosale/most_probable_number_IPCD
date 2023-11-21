@@ -44,9 +44,13 @@ const Cell = props => {
         })
           .then(res => res.text())
           .then(d => {
-            d = d
-              .replace('greater than or equal to ', '≥')
-              .replace('less than ', '≤');
+            d =
+              form.constant *
+              parseInt(
+                d
+                  .replace('greater than or equal to ', '') //≥
+                  .replace('less than ', '') //≤
+              );
             setMpn(d);
             props.setMpn(data => [...data, d]);
             fetch('http://localhost:3001/upload', {

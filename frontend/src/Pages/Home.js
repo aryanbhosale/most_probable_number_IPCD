@@ -51,10 +51,10 @@ const Home = () => {
           label: 'MPN vs Time',
           data: mpnList.map((item, i) => ({
             x: data[i]['time'].toISOString().slice(0, -5).split('T').join(' '),
-            y:
-              item[0] === '≥' || item[0] === '≤'
-                ? parseInt(item.slice(1))
-                : parseInt(item),
+            y: item,
+            // item[0] === '≥' || item[0] === '≤'
+            //   ? parseInt(item.slice(1))
+            //   : parseInt(item),
           })),
           backgroundColor: 'yellow',
           borderColor: 'green',
