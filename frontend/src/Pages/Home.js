@@ -14,6 +14,7 @@ import {
   Filler,
 } from 'chart.js';
 import { useParams, useNavigate } from 'react-router-dom';
+import SecCell from '../Components/SecCell';
 
 ChartJS.register(
   Title,
@@ -34,6 +35,7 @@ const Home = () => {
   const [copyData, setCopyData] = useState([]);
   const [mpnList, setMpn] = useState([]);
   const [gdata, setGdata] = useState({});
+  const [exp, setExp] = useState(1);
 
   useEffect(() => {
     fetch(`http://localhost:3001/user/${googleId}`)
@@ -74,7 +76,6 @@ const Home = () => {
         },
       },
     };
-    console.log(x);
     setGdata(x);
   }, [showGraph]);
 
@@ -88,63 +89,133 @@ const Home = () => {
           borderBottom={'solid lightgray'}
         >
           <Text fontSize={'2xl'}>{`Welcome, ${user.name}`}</Text>
-          <Button
-            colorScheme='blue'
-            onClick={() => {
-              localStorage.clear();
-              navigate('/login');
-            }}
-          >
-            Logout
-          </Button>
+          <Flex justifyContent={'space-between'}>
+            <Button
+              colorScheme='blue'
+              onClick={() => {
+                exp === 1 ? setExp(2) : setExp(1);
+              }}
+              marginRight={'5%'}
+            >
+              {`Exp ${exp === 1 ? 2 : 1}`}
+            </Button>
+            <Button
+              marginLeft={'5%'}
+              colorScheme='blue'
+              onClick={() => {
+                localStorage.clear();
+                navigate('/login');
+              }}
+            >
+              Logout
+            </Button>
+          </Flex>
         </Flex>
-        {copyData.map((item, i) => (
+        {/* {<Flex direction={'column'}>
+          {copyData.map((item, i) => (
+            <Cell
+              key={i}
+              setData={setData}
+              form={item}
+              completed={true}
+              setMpn={setMpn}
+              mpn={mpnList[i]}
+            />
+          ))}
           <Cell
-            key={i}
+            key={copyData.length}
             setData={setData}
-            form={item}
-            completed={true}
+            completed={false}
             setMpn={setMpn}
-            mpn={mpnList[i]}
           />
-        ))}
-        <Cell
-          key={copyData.length}
-          setData={setData}
-          completed={false}
-          setMpn={setMpn}
-        />
-        <Flex justifyContent={'end'}>
-          {copyData.length <= 8 && !showGraph ? (
+          <Flex justifyContent={'end'}>
+            {copyData.length <= 8 && !showGraph ? (
+              <Button
+                colorScheme='blue'
+                m='1%'
+                onClick={() => {
+                  setCopyData(data);
+                }}
+              >
+                +
+              </Button>
+            ) : (
+              <></>
+            )}
             <Button
               colorScheme='blue'
               m='1%'
               onClick={() => {
-                setCopyData(data);
+                console.log(data);
+                setShowGraph(!showGraph);
               }}
             >
-              +
+              End Exp
             </Button>
+          </Flex>
+          {showGraph ? (
+            <Flex width={'70%'}>
+              <Line data={gdata}>Hello</Line>
+            </Flex>
           ) : (
             <></>
           )}
-          <Button
-            colorScheme='blue'
-            m='1%'
-            onClick={() => {
-              console.log(data);
-              setShowGraph(!showGraph);
-            }}
-          >
-            End Exp
-          </Button>
-        </Flex>
-        {showGraph ? (
-          <Flex width={'70%'}>
-            <Line data={gdata}>Hello</Line>
+        </Flex>} */}
+        {exp === 2 ? (
+          <Flex direction={'column'}>
+            <SecCell />
           </Flex>
         ) : (
-          <></>
+          <Flex direction={'column'}>
+            {copyData.map((item, i) => (
+              <Cell
+                key={i}
+                setData={setData}
+                form={item}
+                completed={true}
+                setMpn={setMpn}
+                mpn={mpnList[i]}
+              />
+            ))}
+            <Cell
+              key={copyData.length}
+              setData={setData}
+              completed={false}
+              setMpn={setMpn}
+            />
+            <Flex justifyContent={'end'}>
+              {copyData.length <= 8 && !showGraph ? (
+                <Button
+                  colorScheme='blue'
+                  m='1%'
+                  onClick={() => {
+                    setCopyData(data);
+                  }}
+                >
+                  +
+                </Button>
+              ) : (
+                <></>
+              )}
+              <Button
+                colorScheme='blue'
+                m='1%'
+                onClick={() => {
+                  console.log(data);
+                  setShowGraph(!showGraph);
+                }}
+              >
+                End Exp
+              </Button>
+            </Flex>
+            {showGraph ? (
+              <Flex width={'70%'}>
+                <Line data={gdata}>Hello</Line>
+              </Flex>
+            ) : (
+              <></>
+            )}
+          </Flex>
         )}
       </Flex>
     </ChakraProvider>
