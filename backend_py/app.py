@@ -28,7 +28,8 @@ def prompt():
     
     if(request.method == 'POST'):
         data_json = json.loads(request.data)
-        print(data_json['title'])
+        print(data_json)
+        mode = data_json['exptmode']
         img_url = data_json['img']
         print(img_url)
 
@@ -102,98 +103,187 @@ def prompt():
         # #return response
 
         #return send_file('static/Image/img.png', mimetype='image/gif')
-
+        final_str = ""
         ## logic for counting row-wise light/dark
-        control_h = h_vals[0]
-        r1 = 0
-        r2 = 0
-        r3 = 0
+        if(mode=="standard"):
+            c1 = h_vals[0]
+            c2 = h_vals[1]
 
-        for i in range(0,len(h_vals)):
-            if(i>=6 and i<=10):
-                if(control_h-h_vals[i]>0):
-                    r1 = r1 + 1
-            if(i>=12 and i<=16):
-                if(control_h-h_vals[i]>0):
-                    r2 = r2 + 1
-            if(i>=18 and i<=22):
-                if(control_h-h_vals[i]>0):
-                    r3 = r3 + 1
+            r1 = 0
+            r2 = 0
+            r3 = 0
+
+            for i in range(0,len(h_vals)):
+                if(i>=6 and i<=10):
+                    if(c1-h_vals[i]>0):
+                        r1 = r1 + 1
+                if(i>=12 and i<=16):
+                    if(c2-h_vals[i]>0):
+                        r2 = r2 + 1
+                if(i>=18 and i<=22):
+                    if(c2-h_vals[i]>0):
+                        r3 = r3 + 1
+            
+            ##mpn logic 
+
+            mpn = 0
+
+            if(r1==0 and r2==0 and r3==0):mpn = "less than " + str(2) ##less than 2
+            elif(r1==0 and r2==0 and r3==1):mpn = 2
+            elif(r1==0 and r2==1 and r3==0):mpn = 2
+            elif(r1==0 and r2==2 and r3==0):mpn = 4
+            ###
+            elif(r1==1 and r2==0 and r3==0):mpn = 2
+            elif(r1==1 and r2==0 and r3==1):mpn = 4
+            elif(r1==1 and r2==1 and r3==0):mpn = 4
+            elif(r1==1 and r2==1 and r3==1):mpn = 6
+            elif(r1==1 and r2==2 and r3==0):mpn = 6
+            ###
+            elif(r1==2 and r2==0 and r3==0):mpn = 4
+            elif(r1==2 and r2==0 and r3==1):mpn = 7
+            elif(r1==2 and r2==1 and r3==0):mpn = 7
+            elif(r1==2 and r2==1 and r3==1):mpn = 9
+            elif(r1==2 and r2==2 and r3==0):mpn = 9
+            elif(r1==2 and r2==3 and r3==0):mpn = 12
+            ###
+            elif(r1==3 and r2==0 and r3==0):mpn = 8
+            elif(r1==3 and r2==0 and r3==1):mpn = 11
+            elif(r1==3 and r2==1 and r3==0):mpn = 11
+            elif(r1==3 and r2==1 and r3==1):mpn = 14
+            elif(r1==3 and r2==2 and r3==0):mpn = 14
+            elif(r1==3 and r2==2 and r3==1):mpn = 17
+            ###
+            elif(r1==4 and r2==0 and r3==0):mpn = 13
+            elif(r1==4 and r2==0 and r3==1):mpn = 17
+            elif(r1==4 and r2==1 and r3==0):mpn = 17
+            elif(r1==4 and r2==1 and r3==1):mpn = 21 ## or 26 ??
+            elif(r1==4 and r2==2 and r3==0):mpn = 22
+            elif(r1==4 and r2==2 and r3==1):mpn = 26
+            elif(r1==4 and r2==3 and r3==0):mpn = 27
+            elif(r1==4 and r2==3 and r3==1):mpn = 33
+            elif(r1==4 and r2==4 and r3==0):mpn = 34
+            ###
+            elif(r1==5 and r2==0 and r3==0):mpn = 23
+            elif(r1==5 and r2==0 and r3==1):mpn = 30
+            elif(r1==5 and r2==0 and r3==2):mpn = 40
+            elif(r1==5 and r2==1 and r3==0):mpn = 30
+            elif(r1==5 and r2==1 and r3==1):mpn = 50
+            elif(r1==5 and r2==1 and r3==2):mpn = 60
+            elif(r1==5 and r2==2 and r3==0):mpn = 50
+            elif(r1==5 and r2==2 and r3==1):mpn = 70
+            elif(r1==5 and r2==2 and r3==2):mpn = 90
+            elif(r1==5 and r2==3 and r3==0):mpn = 80
+            elif(r1==5 and r2==3 and r3==1):mpn = 110
+            elif(r1==5 and r2==3 and r3==2):mpn = 140
+            elif(r1==5 and r2==3 and r3==3):mpn = 170
+            elif(r1==5 and r2==4 and r3==0):mpn = 130
+            elif(r1==5 and r2==4 and r3==1):mpn = 170
+            elif(r1==5 and r2==4 and r3==2):mpn = 220
+            elif(r1==5 and r2==4 and r3==3):mpn = 280
+            elif(r1==5 and r2==4 and r3==4):mpn = 350
+            elif(r1==5 and r2==5 and r3==0):mpn = 240
+            elif(r1==5 and r2==5 and r3==1):mpn = 300
+            elif(r1==5 and r2==5 and r3==2):mpn = 500
+            elif(r1==5 and r2==5 and r3==3):mpn = 900
+            elif(r1==5 and r2==5 and r3==4):mpn = 1600
+            elif(r1==5 and r2==5 and r3==5):mpn = "greater than or equal to " + str(1600)
+
+            final_str = mpn
         
-        ##mpn logic 
+        elif(mode=="batch"):
+            img_test0 = data_json['test0']
+            img_test1 = data_json['test1']
+            img_test2 = data_json['test2']
+            img_test3 = data_json['test3']
+            img_test4 = data_json['test4']
 
-        mpn = 0
+            links = [img_test0,img_test1,img_test2,img_test3,img_test4]
+            tests = []
+            test_h_vals = []
 
-        if(r1==0 and r2==0 and r3==0):mpn = "less than " + str(2) ##less than 2
-        elif(r1==0 and r2==0 and r3==1):mpn = 2
-        elif(r1==0 and r2==1 and r3==0):mpn = 2
-        elif(r1==0 and r2==2 and r3==0):mpn = 4
-        ###
-        elif(r1==1 and r2==0 and r3==0):mpn = 2
-        elif(r1==1 and r2==0 and r3==1):mpn = 4
-        elif(r1==1 and r2==1 and r3==0):mpn = 4
-        elif(r1==1 and r2==1 and r3==1):mpn = 6
-        elif(r1==1 and r2==2 and r3==0):mpn = 6
-        ###
-        elif(r1==2 and r2==0 and r3==0):mpn = 4
-        elif(r1==2 and r2==0 and r3==1):mpn = 7
-        elif(r1==2 and r2==1 and r3==0):mpn = 7
-        elif(r1==2 and r2==1 and r3==1):mpn = 9
-        elif(r1==2 and r2==2 and r3==0):mpn = 9
-        elif(r1==2 and r2==3 and r3==0):mpn = 12
-        ###
-        elif(r1==3 and r2==0 and r3==0):mpn = 8
-        elif(r1==3 and r2==0 and r3==1):mpn = 11
-        elif(r1==3 and r2==1 and r3==0):mpn = 11
-        elif(r1==3 and r2==1 and r3==1):mpn = 14
-        elif(r1==3 and r2==2 and r3==0):mpn = 14
-        elif(r1==3 and r2==2 and r3==1):mpn = 17
-        ###
-        elif(r1==4 and r2==0 and r3==0):mpn = 13
-        elif(r1==4 and r2==0 and r3==1):mpn = 17
-        elif(r1==4 and r2==1 and r3==0):mpn = 17
-        elif(r1==4 and r2==1 and r3==1):mpn = 21 ## or 26 ??
-        elif(r1==4 and r2==2 and r3==0):mpn = 22
-        elif(r1==4 and r2==2 and r3==1):mpn = 26
-        elif(r1==4 and r2==3 and r3==0):mpn = 27
-        elif(r1==4 and r2==3 and r3==1):mpn = 33
-        elif(r1==4 and r2==4 and r3==0):mpn = 34
-        ###
-        elif(r1==5 and r2==0 and r3==0):mpn = 23
-        elif(r1==5 and r2==0 and r3==1):mpn = 30
-        elif(r1==5 and r2==0 and r3==2):mpn = 40
-        elif(r1==5 and r2==1 and r3==0):mpn = 30
-        elif(r1==5 and r2==1 and r3==1):mpn = 50
-        elif(r1==5 and r2==1 and r3==2):mpn = 60
-        elif(r1==5 and r2==2 and r3==0):mpn = 50
-        elif(r1==5 and r2==2 and r3==1):mpn = 70
-        elif(r1==5 and r2==2 and r3==2):mpn = 90
-        elif(r1==5 and r2==3 and r3==0):mpn = 80
-        elif(r1==5 and r2==3 and r3==1):mpn = 110
-        elif(r1==5 and r2==3 and r3==2):mpn = 140
-        elif(r1==5 and r2==3 and r3==3):mpn = 170
-        elif(r1==5 and r2==4 and r3==0):mpn = 130
-        elif(r1==5 and r2==4 and r3==1):mpn = 170
-        elif(r1==5 and r2==4 and r3==2):mpn = 220
-        elif(r1==5 and r2==4 and r3==3):mpn = 280
-        elif(r1==5 and r2==4 and r3==4):mpn = 350
-        elif(r1==5 and r2==5 and r3==0):mpn = 240
-        elif(r1==5 and r2==5 and r3==1):mpn = 300
-        elif(r1==5 and r2==5 and r3==2):mpn = 500
-        elif(r1==5 and r2==5 and r3==3):mpn = 900
-        elif(r1==5 and r2==5 and r3==4):mpn = 1600
-        elif(r1==5 and r2==5 and r3==5):mpn = "greater than or equal to " + str(1600)
+            for link in links:
+                url_response = urllib.request.urlopen(link)
+                jpg_as_np = np.frombuffer(url_response.read(), dtype=np.uint8)
+                print(len(jpg_as_np))
+                test = cv2.imdecode(jpg_as_np,cv2.IMREAD_COLOR)
+                tests.append(test)
+
+            
+            for test in tests:
+                x = int(test.shape[0] / 2)
+                y = int(test.shape[1] / 2)
+
+                roi = test[x-20:x+20, y-20:y+20]
+                roi  = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+
+                total_pixels = np.sum(roi[:, :, 0] > 0)
+                average_color = np.sum(roi, axis=(0, 1)) // total_pixels
+                test_h_vals.append(average_color[0])
+                # print("tube"+str(i)+"hsv is"+str(average_color[0]))
+
+            print(test_h_vals)
+            c1 = h_vals[0]
+            c2 = h_vals[3]
+            c3 = h_vals[12]
+            c4 = h_vals[15]
+
+            b1 = 0;t1 = 0
+            b2 = 0;t2 = 0
+            b3 = 0;t3 = 0
+            b4 = 0;t4 = 0
+
+            tt0 = test_h_vals[0]
+            tt1 = test_h_vals[1]
+            tt2 = test_h_vals[2]
+            tt3 = test_h_vals[3]
+            tt4 = test_h_vals[4]
+
+            for i in [1,2,6,7,8]:
+                if(c1-h_vals[i]>0):b1 = b1 + 1
+            for i in [4,5,9,10,11]:
+                if(c2-h_vals[i]>0):b2 = b2 + 1
+            for i in [13,14,18,19,20]:
+                if(c3-h_vals[i]>0):b3 = b3 + 1
+            for i in [16,17,21,22,23]:
+                if(c4-h_vals[i]>0):b4 = b4 + 1
+
+            if(tt0-tt1>0):t1=1
+            if(tt0-tt2>0):t2=1
+            if(tt0-tt3>0):t3=1
+            if(tt0-tt4>0):t4=1
 
 
-        data = { 
-            "Modules" : 15, 
-            "Subject" : str(mpn) 
-        }
+            bs = [b1,b2,b3,b4]
+            ts = [t1,t2,t3,t4]
 
-        r = make_response(data)
-        r.content_type = 'application/json'
-        # return str(mpn)
-        return str(mpn)
+            mpn_str = ""
+
+            for i in range(0,4):
+                b = bs[i]
+                t = ts[i]
+
+                if(t==0 and b==0):mpn = "less than " + str(1)
+                elif(t==0 and b==1):mpn = 1
+                elif(t==0 and b==2):mpn = 2
+                elif(t==0 and b==3):mpn = 4
+                elif(t==0 and b==4):mpn = 5
+                elif(t==0 and b==5):mpn = 7
+                elif(t==1 and b==0):mpn = 2
+                elif(t==1 and b==1):mpn = 3
+                elif(t==1 and b==2):mpn = 6
+                elif(t==1 and b==3):mpn = 9
+                elif(t==1 and b==4):mpn = 16
+                elif(t==1 and b==5):mpn = "greater than "+str(16)
+
+                if(i!=3):mpn_str = mpn_str + str(mpn) + ","
+                else:mpn_str = mpn_str+ str(mpn)
+                print("image"+str(i+1)+"processed")
+
+                final_str  = mpn_str
+                
+
+        
+        return str(final_str)
 
     
 

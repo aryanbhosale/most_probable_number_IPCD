@@ -38,6 +38,7 @@ const Cell = props => {
           body: JSON.stringify({
             title: 'foo',
             body: 'bar',
+            mode:"standard",
             userId: user.googleId,
             img: data.imageUrl,
           }),

@@ -61,6 +61,19 @@ export default function SecCell() {
       .then(data => {
         setImgs(imgs => ({ ...imgs, img5: data.imageUrl }));
         //mpn api call
+        console.log(imgs)
+        fetch('http://localhost:5000/img', {
+          method: 'POST',
+          body: JSON.stringify({
+            exptmode: "batch",
+            //img:imgs.img0, ///add the first link here of the main tray
+            test0:imgs.img1,
+            test1:imgs.img2,
+            test2:imgs.img3,
+            test3:imgs.img4,
+            test4:imgs.img5
+          })
+         })
         setIsLoading(false);
       });
   };
