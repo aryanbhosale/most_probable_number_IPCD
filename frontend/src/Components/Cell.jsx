@@ -38,7 +38,7 @@ const Cell = props => {
           body: JSON.stringify({
             title: 'foo',
             body: 'bar',
-            mode:"standard",
+            mode: 'exptmode',
             userId: user.googleId,
             img: data.imageUrl,
           }),

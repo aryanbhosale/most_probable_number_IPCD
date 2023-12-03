@@ -7,13 +7,45 @@ import {
   Divider,
   Image,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SecCell() {
   const [imgs, setImgs] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [img, setImg] = useState({});
-  // const [mpns, setMpns] = useState([]);
+  const [mpns, setMpns] = useState();
+
+  useEffect(() => {
+    if (
+      imgs.img0 &&
+      imgs.img1 &&
+      imgs.img2 &&
+      imgs.img3 &&
+      imgs.img4 &&
+      imgs.img5
+    ) {
+      console.log(imgs);
+      fetch('http://localhost:5000/img', {
+        method: 'POST',
+        body: JSON.stringify({
+          exptmode: 'batch',
+          img: imgs.img0, ///add the first link here of the main tray
+          test0: imgs.img1,
+          test1: imgs.img2,
+          test2: imgs.img3,
+          test3: imgs.img4,
+          test4: imgs.img5,
+        }),
+      })
+        .then(res => res.text())
+        .catch(err => console.log(err))
+        .then(data => {
+          console.log(data);
+          setMpns(data);
+        });
+    }
+  }, [imgs]);
+
   const handleSubmit = () => {
     setIsLoading(true);
     const fD0 = new FormData();
@@ -21,59 +53,65 @@ export default function SecCell() {
     const fD2 = new FormData();
     const fD3 = new FormData();
     const fD4 = new FormData();
-    fD0.append('image', img['img1']);
-    fD1.append('image', img['img2']);
-    fD2.append('image', img['img3']);
-    fD3.append('image', img['img4']);
-    fD4.append('image', img['img5']);
+    const fD5 = new FormData();
+    fD0.append('image', img['img0']);
+    fD1.append('image', img['img1']);
+    fD2.append('image', img['img2']);
+    fD3.append('image', img['img3']);
+    fD4.append('image', img['img4']);
+    fD5.append('image', img['img5']);
     fetch('http://localhost:3001/imageupload', {
       method: 'POST',
       body: fD0,
     })
       .then(res => res.json())
-      .then(data => {
-        console.log(data.imageUrl);
-        setImgs(imgs => ({ ...imgs, img1: data.imageUrl }));
-      });
+      .then(data => setImgs(imgs => ({ ...imgs, img0: data.imageUrl })));
     fetch('http://localhost:3001/imageupload', {
       method: 'POST',
       body: fD1,
     })
       .then(res => res.json())
-      .then(data => setImgs(imgs => ({ ...imgs, img2: data.imageUrl })));
+      .then(data => setImgs(imgs => ({ ...imgs, img1: data.imageUrl })));
     fetch('http://localhost:3001/imageupload', {
       method: 'POST',
       body: fD2,
     })
       .then(res => res.json())
-      .then(data => setImgs(imgs => ({ ...imgs, img3: data.imageUrl })));
+      .then(data => setImgs(imgs => ({ ...imgs, img2: data.imageUrl })));
     fetch('http://localhost:3001/imageupload', {
       method: 'POST',
       body: fD3,
     })
       .then(res => res.json())
-      .then(data => setImgs(imgs => ({ ...imgs, img4: data.imageUrl })));
+      .then(data => setImgs(imgs => ({ ...imgs, img3: data.imageUrl })));
     fetch('http://localhost:3001/imageupload', {
       method: 'POST',
       body: fD4,
     })
       .then(res => res.json())
+      .then(data => setImgs(imgs => ({ ...imgs, img4: data.imageUrl })));
+    fetch('http://localhost:3001/imageupload', {
+      method: 'POST',
+      body: fD5,
+    })
+      .then(res => res.json())
       .then(data => {
         setImgs(imgs => ({ ...imgs, img5: data.imageUrl }));
-        //mpn api call
-        console.log(imgs)
-        fetch('http://localhost:5000/img', {
-          method: 'POST',
-          body: JSON.stringify({
-            exptmode: "batch",
-            //img:imgs.img0, ///add the first link here of the main tray
-            test0:imgs.img1,
-            test1:imgs.img2,
-            test2:imgs.img3,
-            test3:imgs.img4,
-            test4:imgs.img5
-          })
-         })
+        // fetch('http://localhost:5000/img', {
+        //   method: 'POST',
+        //   body: JSON.stringify({
+        //     exptmode: 'batch',
+        //     img: imgLinks.img1, ///add the first link here of the main tray
+        //     test0: imgLinks.img1,
+        //     test1: imgLinks.img2,
+        //     test2: imgLinks.img3,
+        //     test3: imgLinks.img4,
+        //     test4: imgLinks.img5,
+        //   }),
+        // })
+        //   .then(res => res.text())
+        //   .catch(err => console.log(err))
+        //   .then(data => console.log(data));
         setIsLoading(false);
       });
   };
@@ -86,13 +124,24 @@ export default function SecCell() {
           </Text>
           <FormControl p='1%'>
             <Input
+              id='img0'
+              placeholder='Upload image'
+              type='file'
+              accept='image/*'
+              size={'md'}
+              onChange={e => {
+                setImg(i => ({ ...i, img0: e.target.files[0] }));
+              }}
+            />
+          </FormControl>
+          <FormControl p='1%'>
+            <Input
               id='img1'
               placeholder='Upload image'
               type='file'
               accept='image/*'
               size={'md'}
               onChange={e => {
-                // img['img1'] = e.target.files[0];
                 setImg(i => ({ ...i, img1: e.target.files[0] }));
               }}
             />
@@ -105,7 +154,6 @@ export default function SecCell() {
               accept='image/*'
               size={'md'}
               onChange={e => {
-                // img['img2'] = e.target.files[0];
                 setImg(i => ({ ...i, img2: e.target.files[0] }));
               }}
             />
@@ -118,7 +166,6 @@ export default function SecCell() {
               accept='image/*'
               size={'md'}
               onChange={e => {
-                // img['img3'] = e.target.files[0];
                 setImg(i => ({ ...i, img3: e.target.files[0] }));
               }}
             />
@@ -131,7 +178,6 @@ export default function SecCell() {
               accept='image/*'
               size={'md'}
               onChange={e => {
-                // img['img4'] = e.target.files[0];
                 setImg(i => ({ ...i, img4: e.target.files[0] }));
               }}
             />
@@ -144,7 +190,6 @@ export default function SecCell() {
               accept='image/*'
               size={'md'}
               onChange={e => {
-                // img['img5'] = e.target.files[0];
                 setImg(i => ({ ...i, img5: e.target.files[0] }));
               }}
             />
@@ -167,10 +212,13 @@ export default function SecCell() {
         />
         <Flex direction={'column'}>
           {imgs.img5 ? (
-            <Flex>
-              {Object.values(imgs).map(i => (
-                <Image src={i} boxSize={100} />
-              ))}
+            <Flex direction={'column'} alignItems={'center'}>
+              <Flex>
+                {Object.values(imgs).map((item, i) => (
+                  <Image src={item} boxSize={100} key={i} />
+                ))}
+              </Flex>
+              {mpns ? <Text fontSize={'6xl'}>{mpns}</Text> : <></>}
             </Flex>
           ) : (
             <></>
