@@ -115,15 +115,18 @@ def prompt():
 
             for i in range(0,len(h_vals)):
                 if(i>=6 and i<=10):
-                    if(c1-h_vals[i]>0):
+                    # if(c1-h_vals[i]>0):
+                    if(h_vals[i]>(c2+7) or h_vals[i]<(c2-7)):
                         r1 = r1 + 1
                 if(i>=12 and i<=16):
-                    if(c2-h_vals[i]>0):
+                    # if(c2-h_vals[i]>0):
+                    if(h_vals[i]>(c2+7) or h_vals[i]<(c2-7)):
                         r2 = r2 + 1
                 if(i>=18 and i<=22):
-                    if(c2-h_vals[i]>0):
+                    # if(c2-h_vals[i]>0):
+                    if(h_vals[i]>(c2+7) or h_vals[i]<(c2-7)):
                         r3 = r3 + 1
-            
+            # print(r1, r2, r3)
             ##mpn logic 
 
             mpn = 0
