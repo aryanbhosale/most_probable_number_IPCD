@@ -14,6 +14,7 @@ export default function SecCell() {
   const [isLoading, setIsLoading] = useState(false);
   const [img, setImg] = useState({});
   const [mpns, setMpns] = useState();
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     if (
@@ -42,9 +43,25 @@ export default function SecCell() {
         .then(data => {
           console.log(data);
           setMpns(data);
+          fetch('http://localhost:3001/upload2', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                img: imgs.img0, 
+                test0: imgs.img1,
+                test1: imgs.img2,
+                test2: imgs.img3,
+                test3: imgs.img4,
+                test4: imgs.img5,
+                googleId: user.googleId,
+                mpn: data,
+              }),
+            })
         });
     }
-  }, [imgs]);
+  }, [user.googleId, imgs]);
 
   const handleSubmit = () => {
     setIsLoading(true);

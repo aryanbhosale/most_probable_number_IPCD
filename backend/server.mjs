@@ -50,6 +50,7 @@ app.use(
               email: profile.emails[0].value,
               googleId: profile.id,
               data: [],
+              data2: []
             };
             const result = await database.insertOne(newUser);
             if (result.acknowledged) {
@@ -113,6 +114,40 @@ app.post('/upload', async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 });
+
+app.post('/upload2', async (req, res) => {
+  try {
+    const { googleId, img, test0, test1, test2, test3, test4, mpn} = req.body;
+    const user = await database.findOne({ googleId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const newData2 = {
+          img: img, 
+          test0: test0,
+          test1: test1,
+          test2: test2,
+          test3: test3,
+          test4: test4,
+          mpn: mpn
+    };
+
+    const updatedUser = await database.findOneAndUpdate(
+      { googleId },
+      { $push: { data2: newData2 } },
+      { new: true }
+    );
+
+    console.log(updatedUser);
+    return res.status(201).json({ message: 'Post added successfully', user: user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 
 app.post('/imageupload', upload.single('image'), async (req, res) => {
