@@ -117,7 +117,7 @@ app.post('/upload', async (req, res) => {
 
 app.post('/upload2', async (req, res) => {
   try {
-    const { googleId, img, test0, test1, test2, test3, test4, mpn} = req.body;
+    const { googleId, img, test0, test1, test2, test3, test4, mpn, time} = req.body;
     const user = await database.findOne({ googleId });
 
     if (!user) {
@@ -131,7 +131,8 @@ app.post('/upload2', async (req, res) => {
           test2: test2,
           test3: test3,
           test4: test4,
-          mpn: mpn
+          mpn: mpn,
+          timestamp: time
     };
 
     const updatedUser = await database.findOneAndUpdate(

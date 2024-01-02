@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 
 export default function SecCell() {
   const [imgs, setImgs] = useState({});
+  const [time, setTime] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [img, setImg] = useState({});
   const [mpns, setMpns] = useState();
@@ -44,21 +45,21 @@ export default function SecCell() {
           console.log(data);
           setMpns(data);
           fetch('http://localhost:3001/upload2', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                img: imgs.img0, 
-                test0: imgs.img1,
-                test1: imgs.img2,
-                test2: imgs.img3,
-                test3: imgs.img4,
-                test4: imgs.img5,
-                googleId: user.googleId,
-                mpn: data,
-              }),
-            })
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              img: imgs.img0,
+              test0: imgs.img1,
+              test1: imgs.img2,
+              test2: imgs.img3,
+              test3: imgs.img4,
+              test4: imgs.img5,
+              googleId: user.googleId,
+              mpn: data,
+            }),
+          });
         });
     }
   }, [user.googleId, imgs]);
@@ -114,21 +115,6 @@ export default function SecCell() {
       .then(res => res.json())
       .then(data => {
         setImgs(imgs => ({ ...imgs, img5: data.imageUrl }));
-        // fetch('http://localhost:5000/img', {
-        //   method: 'POST',
-        //   body: JSON.stringify({
-        //     exptmode: 'batch',
-        //     img: imgLinks.img1, ///add the first link here of the main tray
-        //     test0: imgLinks.img1,
-        //     test1: imgLinks.img2,
-        //     test2: imgLinks.img3,
-        //     test3: imgLinks.img4,
-        //     test4: imgLinks.img5,
-        //   }),
-        // })
-        //   .then(res => res.text())
-        //   .catch(err => console.log(err))
-        //   .then(data => console.log(data));
         setIsLoading(false);
       });
   };
@@ -139,6 +125,17 @@ export default function SecCell() {
           <Text fontSize={'xl'} p='1%'>
             Upload images
           </Text>
+          <FormControl p='1%'>
+            <Input
+              id='time'
+              placeholder='Select date and time'
+              type='datetime-local'
+              size={'md'}
+              onChange={e => {
+                setTime(new Date(e.target.value));
+              }}
+            />
+          </FormControl>
           <FormControl p='1%'>
             <Input
               id='img0'
@@ -227,16 +224,32 @@ export default function SecCell() {
           borderColor={'black'}
           height={'auto'}
         />
-        <Flex direction={'column'}>
-          {imgs.img5 ? (
-            <Flex direction={'column'} alignItems={'center'}>
-              <Flex>
-                {Object.values(imgs).map((item, i) => (
-                  <Image src={item} boxSize={100} key={i} />
-                ))}
+        <Flex
+          direction={'column'}
+          alignItems={'center'}
+          justifyContent={'space-evenly'}
+          width={'100%'}
+        >
+          {imgs.img5 && time ? (
+            <>
+              <Flex direction={'column'} textAlign={'center'}>
+                <Flex>
+                  {Object.values(imgs).map((item, i) => (
+                    <Image src={item} boxSize={100} key={i} />
+                  ))}
+                </Flex>
+                <Text fontSize={'xl'}>{time.toDateString()}</Text>
               </Flex>
-              {mpns ? <Text fontSize={'6xl'}>{mpns}</Text> : <></>}
-            </Flex>
+              {mpns ? (
+                <Text fontSize={'6xl'}>
+                  {mpns
+                    .replaceAll('greater than ', '')
+                    .replaceAll('less than', '')}
+                </Text>
+              ) : (
+                <></>
+              )}
+            </>
           ) : (
             <></>
           )}
