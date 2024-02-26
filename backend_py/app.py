@@ -260,23 +260,24 @@ def prompt():
             ts = [t1,t2,t3,t4]
 
             mpn_str = ""
-
+            
+            
             for i in range(0,4):
                 b = bs[i]
                 t = ts[i]
 
-                if(t==0 and b==0):mpn = "less than " + str(1)
-                elif(t==0 and b==1):mpn = 1
-                elif(t==0 and b==2):mpn = 2
-                elif(t==0 and b==3):mpn = 4
-                elif(t==0 and b==4):mpn = 5
-                elif(t==0 and b==5):mpn = 7
-                elif(t==1 and b==0):mpn = 2
-                elif(t==1 and b==1):mpn = 3
-                elif(t==1 and b==2):mpn = 6
-                elif(t==1 and b==3):mpn = 9
-                elif(t==1 and b==4):mpn = 16
-                elif(t==1 and b==5):mpn = "greater than "+str(16)
+                if(t==0 and b==0):mpn = "less than " + str(1*(10**(2i)))
+                elif(t==0 and b==1):mpn = 1*(10**(2i))
+                elif(t==0 and b==2):mpn = 2*(10**(2i))
+                elif(t==0 and b==3):mpn = 4*(10**(2i))
+                elif(t==0 and b==4):mpn = 5*(10**(2i))
+                elif(t==0 and b==5):mpn = 7*(10**(2i))
+                elif(t==1 and b==0):mpn = 2*(10**(2i))
+                elif(t==1 and b==1):mpn = 3*(10**(2i))
+                elif(t==1 and b==2):mpn = 6*(10**(2i))
+                elif(t==1 and b==3):mpn = 9*(10**(2i))
+                elif(t==1 and b==4):mpn = 16*(10**(2i))
+                elif(t==1 and b==5):mpn = "greater than "+str(16*(10**(2i)))
 
                 if(i!=3):mpn_str = mpn_str + str(mpn) + ","
                 else:mpn_str = mpn_str+ str(mpn)
